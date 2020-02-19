@@ -21,8 +21,18 @@ For each of these types, there are works about how fakes are created, and works 
 - In simple words, the task comes down to finding the patches of the images that depict these abnormalities, and the very act of finding these patches lead to the localization property as well.
 - The main contributions of the paper:
     - A novel attention layer to improve the classification performance and produce attention map indicating the manipulated face part.
-    - ssss
-- dfdf
+    - A novel metric, **Inverse Intersection NonContainment (IINC)**, for evaluating attention maps that produces a more coherent evaluation than existing metrics.
+- The **main goal** is to _**learn the filters**_ that generate the required attention maps.
+- The paper consider the possibility of not having real/fake label available, hence, provides two primary methods to do it:
+    - **Self-attention PCA:** used in unsupervised setting.
+    - **Direction Regression:** Here the labels are available. They add one more channel in the previous convolutional layer to generate the feature map. The last channel with sigmoid function serves as the attention map.
+- They make the setup quite modular by encapsulating the attention map generation (PCA or Regression), sigmoid operation and channel-wise multiplication as a layer and call it **Attention based layer**.
+- **So where should we insert this layer ?** The authors did an extensive ablation study by injecting Attention based layer at various places in **XceptionNet** based backbone ([xception paper](./docs/xception_paper.pdf)). Their results show that different placement options favor different accuracy metrics (refer to Table 4 in the paper).
+- The results indicate that the insertion after early layers results in low EER whereas later placement improves the classification accuracy. 
+- They conclude by suggesting that the middle placement (after Block 4) exhibits strong performance for all metrics, without significant degradation.
+- **Is this attention layer specific to XceptionNet ?** No. The author used it with VGG16 and a custom network backbone as well. In all 3 cases, the insertion of attention layer improved the accuracy of fake detection. Though, the placement of layer and usage of attention map methods (PCA or Regression) do seem to have some connection with the type of backbone.
+
+
 
 
 
