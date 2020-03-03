@@ -130,4 +130,4 @@ dmypy.json
 
 # custom
 data
-
+.DS_Store
