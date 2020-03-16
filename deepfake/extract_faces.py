@@ -1,3 +1,18 @@
+"""
+    - run this in the command line using nohup as below:
+
+    `nohup python -u extract_faces.py > valid_fake.log &`
+
+    - you can check if the code is running by executing this:
+
+    `ps ax | grep extract_faces.py`
+
+    NOTE: make sure that you've activated the virtual environment
+
+    good source for nohup: https://janakiev.com/blog/python-background/
+"""
+
+
 import os
 import sys
 import logging
@@ -76,8 +91,8 @@ def rect_to_bb(rect):
     h = rect.bottom() - y
     return (x, y, w, h)
 
-images = glob(os.path.join(BASE_FOLDER, DATA_FOLDER, VALID_FOLDER, 'REAL', '*.jpg'))
-face_dir = os.path.join(BASE_FOLDER, DATA_FOLDER, VALID_FACE, 'REAL')
+images = glob(os.path.join(BASE_FOLDER, DATA_FOLDER, VALID_FOLDER, 'FAKE', '*.jpg'))
+face_dir = os.path.join(BASE_FOLDER, DATA_FOLDER, VALID_FACE, 'FAKE')
 logging.info(f"Extracting faces for: {face_dir}")
 for idx, i in enumerate(images):
     framename = i.split('/')[-1]
@@ -99,6 +114,6 @@ for idx, i in enumerate(images):
                     file_path = os.path.join(face_dir, fname)
                     cv.imwrite(file_path, roi_)
     except Exception as e:
-        logging.ERROR(e)
+        logging.error(f"Error occured: {e}")
         pass
                 
