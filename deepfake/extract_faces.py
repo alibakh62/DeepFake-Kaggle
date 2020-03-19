@@ -91,14 +91,19 @@ def rect_to_bb(rect):
     h = rect.bottom() - y
     return (x, y, w, h)
 
-images = glob(os.path.join(BASE_FOLDER, DATA_FOLDER, VALID_FOLDER, 'FAKE', '*.jpg'))
-face_dir = os.path.join(BASE_FOLDER, DATA_FOLDER, VALID_FACE, 'FAKE')
+images = glob(os.path.join(BASE_FOLDER, DATA_FOLDER, TRAIN_FOLDER, 'REAL', '*.jpg'))
+face_dir = os.path.join(BASE_FOLDER, DATA_FOLDER, TRAIN_FACE, 'REAL')
 logging.info(f"Extracting faces for: {face_dir}")
+cnt_images = 0
+cnt_faces = 0
+cnt_faces_not_detected = 0
 for idx, i in enumerate(images):
     framename = i.split('/')[-1]
     name = framename.split("_")[0]
     frame_num = os.path.splitext(framename.split("_")[1])[0]
     logging.info(f"reading image: {name}")
+    cnt_images += 1
+    logging.info(f"count of images read so far: {cnt_images}")
     try:
         img = cv.imread(i)
         faces = detector(img, 1)
@@ -112,8 +117,14 @@ for idx, i in enumerate(images):
                     fname = f"{name}_{frame_num}.jpg"
                     logging.info(f"Writing file: {fname}")
                     file_path = os.path.join(face_dir, fname)
+                    cnt_faces += 1
+                    logging.info(f"count of faces read so far: {cnt_faces}")
                     cv.imwrite(file_path, roi_)
+        else:
+            cnt_faces_not_detected += 1
+            logging.info(f"count of face not detected: {cnt_faces_not_detected}")
     except Exception as e:
         logging.error(f"Error occured: {e}")
         pass
+    logging.info("="*50)
                 
