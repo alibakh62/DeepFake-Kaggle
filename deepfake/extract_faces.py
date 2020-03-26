@@ -22,13 +22,8 @@ sys.path.insert(0, '..')
 
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 import cv2 as cv
-
 import dlib
-from tensorflow.keras.preprocessing import image
-import multiprocessing
-from joblib import Parallel, delayed
 from glob import glob
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(asctime)s - %(filename)s - %(lineno)d - %(message)s', level=logging.DEBUG)
@@ -70,6 +65,11 @@ if not os.path.isdir(os.path.join(valid_dir, 'REAL')):
 
 if not os.path.isdir(os.path.join(valid_dir, 'FAKE')):
     os.mkdir(os.path.join(valid_dir, 'FAKE'))
+
+# test faces folder
+test_dir = os.path.join(data_dir, TEST_FACE)
+if not os.path.isdir(test_dir):
+    os.mkdir(test_dir)
 
 # ========== getting a count of frames in each folder
 logging.info(f"Total REAL train: {len(os.listdir(os.path.join(BASE_FOLDER, DATA_FOLDER, TRAIN_FOLDER, 'REAL')))}")
