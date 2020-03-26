@@ -8,6 +8,8 @@
     `ps ax | grep extract_frames.py`
 
     NOTE: make sure that you've activated the virtual environment
+    NOTE: for extracting frames from test videos, add the '-t' argument:
+          `nohup python -u extract_frames.py -t > train_frames.log &`
 
     good source for nohup: https://janakiev.com/blog/python-background/
 """

@@ -1,7 +1,10 @@
 """
     - run this in the command line using nohup as below:
 
-    `nohup python -u extract_faces.py > valid_fake.log &`
+    `nohup python -u extract_faces.py -d train -c REAL > train_face_real_logs.log &`
+
+    NOTE: -c can be either REAL or FAKE
+    NOTE: -d can be either of train or valid or test
 
     - you can check if the code is running by executing this:
 
@@ -25,11 +28,22 @@ import pandas as pd
 import cv2 as cv
 import dlib
 from glob import glob
+import multiprocessing
+import argparse
+
+# Argument parser
+parser = argparse.ArgumentParser(description='DeepFake DataPrep Parser')
+parser.add_argument('-c', type=str, help="video class")
+parser.add_argument('-d', type=str, help="train/valid/test")
+args = parser.parse_args()
+global dataset, class_folder
+dataset = args.d
+class_folder = args.c
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(asctime)s - %(filename)s - %(lineno)d - %(message)s', level=logging.DEBUG)
 
+# face detector
 detector = dlib.get_frontal_face_detector()
-
 
 BASE_FOLDER = '..'
 DATA_FOLDER = 'data'
@@ -91,16 +105,13 @@ def rect_to_bb(rect):
     h = rect.bottom() - y
     return (x, y, w, h)
 
-images = glob(os.path.join(BASE_FOLDER, DATA_FOLDER, TRAIN_FOLDER, 'REAL', '*.jpg'))
-face_dir = os.path.join(BASE_FOLDER, DATA_FOLDER, TRAIN_FACE, 'REAL')
-logging.info(f"Extracting faces for: {face_dir}")
-cnt_images = 0
-cnt_faces = 0
-cnt_faces_not_detected = 0
-for idx, i in enumerate(images):
+def main(idx, i):
+    cnt_images = 0
+    cnt_faces = 0
+    cnt_faces_not_detected = 0
     framename = i.split('/')[-1]
     name = framename.split("_")[0]
-    frame_num = os.path.splitext(framename.split("_")[1])[0]
+    frame_num = os.path.splitext(framename.split("_")[1])[0]    
     logging.info(f"reading image: {name}")
     cnt_images += 1
     logging.info(f"count of images read so far: {cnt_images}")
@@ -127,4 +138,25 @@ for idx, i in enumerate(images):
         logging.error(f"Error occured: {e}")
         pass
     logging.info("="*50)
-                
+
+
+if __name__ == "__main__":
+    
+    if dataset == 'test':
+        images = glob(os.path.join(BASE_FOLDER, DATA_FOLDER, dataset, '*.jpg'))
+    else:
+        images = glob(os.path.join(BASE_FOLDER, DATA_FOLDER, dataset, class_folder, '*.jpg'))
+    
+    if dataset == 'train':
+        face_dir = os.path.join(BASE_FOLDER, DATA_FOLDER, TRAIN_FACE, class_folder)
+    elif dataset == 'valid':
+        face_dir = os.path.join(BASE_FOLDER, DATA_FOLDER, VALID_FACE, class_folder)
+    else:
+        face_dir = os.path.join(BASE_FOLDER, DATA_FOLDER, TEST_FACE)
+    
+    logging.info(f"number of frames: {len(images)}")
+    logging.info(f"extracting faces into {face_dir}")
+
+    pool = multiprocessing.Pool()
+    pool.starmap(main, enumerate(images))
+    pool.close()
