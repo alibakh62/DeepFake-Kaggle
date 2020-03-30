@@ -1,7 +1,7 @@
 """
     - run this in the command line using nohup as below:
 
-    `nohup python -u extract_frames.py > train_frames.log &`
+    `nohup python -u extract_frames.py -c <CHUNKNAME> > train_frames.log &`
 
     - you can check if the code is running by executing this:
 
@@ -31,6 +31,7 @@ import argparse
 
 # Argument parser
 parser = argparse.ArgumentParser(description='DeepFake DataPrep Parser')
+parser.add_argument('-c', type=str, help="chunk name", required=True)
 parser.add_argument('-t', action="store_true", default=False, help="Is it preprocessing for test data")
 args = parser.parse_args()
 global test, metadata
@@ -45,7 +46,7 @@ TRAIN_FRAMES = 'train'
 VALID_FRAMES = 'valid'
 TEST_FRAMES = 'test'
 TRAIN_VIDEOS = 'train_videos'
-CHUNK_NAME = 'train_sample_videos'
+CHUNK_NAME = args.c
 TEST_VIDEOS = 'test_videos'
 METADATA = 'metadata'
 
